@@ -91,7 +91,7 @@ application's startup. This is still possible with ``IOLoop.run_sync``::
     client = motor.MotorClient(host, port)
     try:
         loop.run_sync(client.open)
-    except pymongo.errors.AutoReconnect:
+    except motor.errors.AutoReconnect:
         print "Can't connect"
 
 Futures

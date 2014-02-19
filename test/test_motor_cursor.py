@@ -18,10 +18,10 @@ import sys
 import unittest
 
 import greenlet
-import pymongo
+import _motor_pymongo as pymongo
 from tornado import gen
-from pymongo.errors import InvalidOperation
-from pymongo.errors import OperationFailure
+from motor.errors import InvalidOperation
+from motor.errors import OperationFailure
 from tornado.concurrent import Future
 from tornado.testing import gen_test
 

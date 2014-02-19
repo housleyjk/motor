@@ -16,7 +16,7 @@
 
 import unittest
 
-from pymongo.errors import BulkWriteError
+from motor.errors import BulkWriteError
 from tornado.testing import gen_test
 
 import motor

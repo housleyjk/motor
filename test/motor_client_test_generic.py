@@ -15,13 +15,12 @@
 """Generic tests for MotorClient and MotorReplicaSetClient."""
 import time
 
-import pymongo.errors
-import pymongo.mongo_replica_set_client
 from nose.plugins.skip import SkipTest
 from tornado import gen
 from tornado.testing import gen_test
 
 import motor
+from motor.errors import InvalidName, OperationFailure
 from test import assert_raises
 from test.utils import server_is_master_with_slave, remove_all_users
 
@@ -43,7 +42,7 @@ class MotorClientTestMixin(object):
         with assert_raises(TypeError):
             yield cx.copy_database('foo', 4)
 
-        with assert_raises(pymongo.errors.InvalidName):
+        with assert_raises(InvalidName):
             yield cx.copy_database('foo', '$foo')
 
     @gen_test
@@ -159,12 +158,12 @@ class MotorClientTestMixin(object):
         try:
             yield cx.motor_test.add_user('mike', 'password')
 
-            with assert_raises(pymongo.errors.OperationFailure):
+            with assert_raises(OperationFailure):
                 yield cx.copy_database(
                     'motor_test', target_db_name,
                     username='foo', password='bar')
 
-            with assert_raises(pymongo.errors.OperationFailure):
+            with assert_raises(OperationFailure):
                 yield cx.copy_database(
                     'motor_test', target_db_name,
                     username='mike', password='bar')

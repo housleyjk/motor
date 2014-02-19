@@ -22,7 +22,7 @@ import time
 import tornado.web
 from tornado import gen
 
-import gridfs
+import _motor_gridfs as gridfs
 import motor
 
 

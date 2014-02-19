@@ -28,9 +28,8 @@ import time
 
 from stat import S_IRUSR
 
-import pymongo
-import pymongo.errors
-from pymongo.read_preferences import ReadPreference
+from _motor_pymongo.read_preferences import ReadPreference
+from motor.errors import OperationFailure, ConnectionFailure
 
 home = os.environ.get('HOME')
 default_dbpath = os.path.join(home, 'data', 'pymongo_high_availability')
@@ -157,7 +156,7 @@ def start_replica_set(members, auth=False, fresh=True):
             print 'rs.initiate(%s)' % config
 
         c.admin.command('replSetInitiate', config)
-    except pymongo.errors.OperationFailure, e:
+    except OperationFailure, e:
         # Already initialized from a previous run?
         if ha_tools_debug:
             print e
@@ -177,7 +176,7 @@ def start_replica_set(members, auth=False, fresh=True):
                 len(get_secondaries()) == expected_secondaries and
                 len(get_arbiters()) == expected_arbiters):
                 break
-        except pymongo.errors.ConnectionFailure:
+        except ConnectionFailure:
             # Keep waiting
             pass
 
@@ -255,7 +254,7 @@ def create_sharded_cluster(num_routers=3):
     client = pymongo.MongoClient(host)
     try:
         client.admin.command({'addshard': shard_host})
-    except pymongo.errors.OperationFailure:
+    except OperationFailure:
         # Already configured.
         pass
 
@@ -296,7 +295,7 @@ def get_primary():
         assert len(primaries) <= 1
         if primaries:
             return primaries[0]
-    except pymongo.errors.ConnectionFailure:
+    except ConnectionFailure:
         pass
 
     return None

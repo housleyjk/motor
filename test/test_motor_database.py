@@ -16,12 +16,12 @@
 
 import unittest
 
-import pymongo.database
-from pymongo.errors import OperationFailure, CollectionInvalid
-from pymongo.son_manipulator import AutoReference, NamespaceInjector
 from tornado.testing import gen_test
 
 import motor
+from _motor_pymongo import database
+from motor.errors import OperationFailure, CollectionInvalid
+from _motor_pymongo.son_manipulator import AutoReference, NamespaceInjector
 import test
 from test import version, MotorTest, assert_raises
 from test.utils import remove_all_users
@@ -42,7 +42,7 @@ class MotorDatabaseTest(MotorTest):
 
     def test_collection_named_delegate(self):
         db = self.db
-        self.assertTrue(isinstance(db.delegate, pymongo.database.Database))
+        self.assertTrue(isinstance(db.delegate, database.Database))
         self.assertTrue(isinstance(db['delegate'], motor.MotorCollection))
         db.connection.close()
 

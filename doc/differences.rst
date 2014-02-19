@@ -145,7 +145,7 @@ PyMongo deprecated the ``slave_okay`` / ``slaveok`` option in favor of
 2.4, as well as deprecating the ``safe`` option in favor of
 :attr:`~motor.MotorClient.write_concern`.
 Motor supports none of PyMongo's deprecated options and classes at all, and
-will raise :exc:`~pymongo.errors.ConfigurationError` if you use them.
+will raise :exc:`~motor.errors.ConfigurationError` if you use them.
 
 MasterSlaveConnection
 ---------------------

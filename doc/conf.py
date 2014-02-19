@@ -79,8 +79,8 @@ from datetime import timedelta
 from tornado import gen
 from tornado.ioloop import IOLoop
 
-import pymongo
-from pymongo.mongo_client import MongoClient
+import _motor_pymongo as pymongo
+from _motor_pymongo.mongo_client import MongoClient
 sync_client = MongoClient()
 sync_client.drop_database("doctest_test")
 db = sync_client.doctest_test

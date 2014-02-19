@@ -31,32 +31,58 @@ import motor
 
 # Make e.g. "from pymongo.errors import AutoReconnect" work. Note that
 # importing * won't pick up underscore-prefixed attrs.
-from gridfs.errors import *
-from pymongo import *
-from pymongo import member
-from pymongo import son_manipulator
-from pymongo import ssl_match_hostname
-from pymongo.helpers import _unpack_response, _check_command_response
-from pymongo.common import *
-from pymongo.cursor import *
-from pymongo.cursor import _QUERY_OPTIONS
-from pymongo.errors import *
-from pymongo.member import PRIMARY, SECONDARY, OTHER
-from pymongo.read_preferences import *
-from pymongo.son_manipulator import *
-from pymongo.uri_parser import *
-from pymongo.uri_parser import _partition, _rpartition
-from pymongo import auth
-from pymongo.auth import *
-from pymongo.auth import _password_digest
-from gridfs.grid_file import DEFAULT_CHUNK_SIZE, _SEEK_CUR, _SEEK_END
+from _motor_bson import *
+from _motor_bson import _bson_to_dict
 
+# TODO: remove?
+from _motor_bson import binary
+from _motor_bson import code
+from _motor_bson import dbref
+from _motor_bson import errors
+from _motor_bson import objectid
+from _motor_bson import py3compat
+from _motor_bson import son
+
+
+from _motor_bson.binary import *
+from _motor_bson.code import *
+from _motor_bson.dbref import *
+from _motor_bson.errors import *
+from _motor_bson.json_util import *
+from _motor_bson.max_key import *
+from _motor_bson.min_key import *
+from _motor_bson.objectid import *
+from _motor_bson.py3compat import *
+from _motor_bson.regex import *
+from _motor_bson.son import *
+from _motor_bson.tz_util import *
+from _motor_gridfs.errors import *
+from _motor_gridfs.grid_file import DEFAULT_CHUNK_SIZE, _SEEK_CUR, _SEEK_END
+from _motor_pymongo import *
+from _motor_pymongo import auth, member, son_manipulator, ssl_match_hostname
+from _motor_pymongo.auth import *
+from _motor_pymongo.auth import _password_digest
+from _motor_pymongo.common import *
+from _motor_pymongo.cursor import *
+from _motor_pymongo.cursor import _QUERY_OPTIONS
+from _motor_pymongo.helpers import _unpack_response, _check_command_response
+from _motor_pymongo.member import PRIMARY, SECONDARY, OTHER
+from _motor_pymongo.pool import *
+from _motor_pymongo.pool import _closed
+from _motor_pymongo.read_preferences import *
+from _motor_pymongo.son_manipulator import *
+from _motor_pymongo.uri_parser import *
+from _motor_pymongo.uri_parser import _partition, _rpartition
+from _motor_pymongo.mongo_replica_set_client import *
+from _motor_pymongo.mongo_replica_set_client import _partition_node
+from motor.errors import *
+
+
+# Imported by some tests, but not used.
 GridFile = None
-have_gevent = False
 
-from pymongo import GEOSPHERE, HASHED
-from pymongo.pool import NO_REQUEST, NO_SOCKET_YET, SocketInfo, Pool, _closed
-from pymongo.mongo_replica_set_client import _partition_node, Member, Monitor
+# Checked by some tests.
+have_gevent = False
 
 
 def unwrap_synchro(fn):

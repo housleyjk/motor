@@ -13,20 +13,20 @@
 # limitations under the License.
 
 """Test Motor, an asynchronous driver for MongoDB and Tornado."""
-import contextlib
 
+import contextlib
 import datetime
 import functools
 import os
 import time
 
-import pymongo
-import pymongo.errors
 from nose.plugins.skip import SkipTest
-from pymongo.mongo_client import _partition_node
 from tornado import gen, testing
 
+import _motor_pymongo as pymongo
 import motor
+from _motor_pymongo.mongo_client import _partition_node
+from _motor_pymongo import errors
 
 HAVE_SSL = True
 try:
@@ -84,7 +84,7 @@ def setup_package():
             ssl=True)
 
         mongod_started_with_ssl = True
-    except pymongo.errors.ConnectionFailure:
+    except errors.ConnectionFailure:
         try:
             sync_cx = pymongo.MongoClient(
                 host, port,
@@ -94,7 +94,7 @@ def setup_package():
 
             mongod_started_with_ssl = True
             mongod_validates_client_cert = True
-        except pymongo.errors.ConnectionFailure:
+        except errors.ConnectionFailure:
             sync_cx = pymongo.MongoClient(
                 host, port,
                 connectTimeoutMS=connectTimeoutMS,
@@ -198,7 +198,7 @@ class MotorTest(PauseMixin, testing.AsyncTestCase):
 
             try:
                 next(sync_cursor)
-            except pymongo.errors.OperationFailure, e:
+            except errors.OperationFailure, e:
                 # Let's check this error was because the cursor was killed,
                 # not a test bug. mongod reports "cursor id 'N' not valid at
                 # server", mongos says:

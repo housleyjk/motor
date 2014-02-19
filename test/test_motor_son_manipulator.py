@@ -14,14 +14,14 @@
 
 """Test Motor, an asynchronous driver for MongoDB and Tornado."""
 
-import pymongo.son_manipulator
 from tornado.testing import gen_test
 
 import test
+from _motor_pymongo import son_manipulator
 from test import MotorTest
 
 
-class CustomSONManipulator(pymongo.son_manipulator.SONManipulator):
+class CustomSONManipulator(son_manipulator.SONManipulator):
     """A pymongo outgoing SON Manipulator that adds
     ``{'added_field' : 42}``
     """

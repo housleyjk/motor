@@ -54,6 +54,11 @@ excluded_modules = [
 ]
 
 excluded_tests = [
+    # Our SynchroModuleFinder hack doesn't fool Pickle.
+    'TestBinary.test_pickle',
+    'TestObjectId.test_pickle_backwards_compatability',
+    'TestSON.test_pickle_backwards_compatability',
+
     # Depends on requests.
     '*.test_copy_db',
     'TestCollection.test_insert_large_batch',
@@ -211,6 +216,20 @@ class SynchroNosePlugin(Plugin):
 # master_slave_connection, connection, etc. even though Motor doesn't support
 # them and we exclude them from tests, so that the import doesn't fail.
 pymongo_modules = set([
+    'bson',
+    'bson.binary',
+    'bson.code',
+    'bson.dbref',
+    'bson.errors',
+    'bson.json_util',
+    'bson.max_key',
+    'bson.min_key',
+    'bson.objectid',
+    'bson.py3compat',
+    'bson.regex',
+    'bson.son',
+    'bson.timestamp',
+    'bson.tz_util',
     'gridfs',
     'gridfs.errors',
     'gridfs.grid_file',

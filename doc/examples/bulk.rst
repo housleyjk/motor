@@ -86,14 +86,14 @@ describing the type and count of operations performed.
    'writeErrors': []}
 
 The first write failure that occurs (e.g. duplicate key error) aborts the
-remaining operations, and Motor raises :class:`~pymongo.errors.BulkWriteError`.
+remaining operations, and Motor raises :class:`~motor.errors.BulkWriteError`.
 The :attr:`details` attibute of the exception instance provides the execution
 results up until the failure occurred and details about the failure - including
 the operation that caused the failure.
 
 .. doctest::
 
-  >>> from pymongo.errors import BulkWriteError
+  >>> from motor.errors import BulkWriteError
   >>>
   >>> @gen.coroutine
   ... def f():

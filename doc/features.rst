@@ -30,7 +30,7 @@ timeout interface::
     def f():
         try:
             document = yield db.collection.find_one(my_complex_query, network_timeout=5)
-        except pymongo.errors.ConnectionFailure:
+        except motor.errors.ConnectionFailure:
             # find_one took more than 5 seconds
             pass
 

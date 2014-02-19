@@ -10,7 +10,7 @@
 
      Get the `name` sub-collection of :class:`MotorCollection` `c`.
 
-     Raises :class:`~pymongo.errors.InvalidName` if an invalid
+     Raises :class:`~motor.errors.InvalidName` if an invalid
      collection name is used.
 
   .. attribute:: database

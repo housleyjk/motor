@@ -19,8 +19,8 @@ import ssl
 from urllib import quote_plus
 
 from nose.plugins.skip import SkipTest
-from pymongo.common import HAS_SSL
-from pymongo.errors import (ConfigurationError,
+from _motor_pymongo.common import HAS_SSL
+from motor.errors import (ConfigurationError,
                             ConnectionFailure,
                             OperationFailure)
 from tornado.testing import gen_test

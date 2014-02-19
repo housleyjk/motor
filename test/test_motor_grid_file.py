@@ -19,11 +19,11 @@ import datetime
 import unittest
 from functools import partial
 
-from bson.objectid import ObjectId
-from bson.py3compat import b
-from gridfs.errors import NoFile
+from _motor_bson.objectid import ObjectId
+from _motor_bson.py3compat import b
+from _motor_gridfs.errors import NoFile
 from tornado.testing import gen_test
-from pymongo.errors import InvalidOperation
+from motor.errors import InvalidOperation
 
 import motor
 import test

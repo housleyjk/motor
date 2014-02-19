@@ -21,9 +21,9 @@ import time
 import re
 import unittest
 
-from bson.py3compat import b
-import gridfs
-import pymongo
+from _motor_bson.py3compat import b
+import _motor_gridfs as gridfs
+import _motor_pymongo as pymongo
 from tornado.testing import AsyncHTTPTestCase
 from tornado.web import Application
 

@@ -16,11 +16,11 @@
 
 import unittest
 
-import bson
-from bson.objectid import ObjectId
+import _motor_bson as bson
+from _motor_bson.objectid import ObjectId
 from nose.plugins.skip import SkipTest
-from pymongo import ReadPreference
-from pymongo.errors import DuplicateKeyError
+from _motor_pymongo import ReadPreference
+from motor.errors import DuplicateKeyError
 from tornado import gen
 from tornado.concurrent import Future
 from test.utils import delay

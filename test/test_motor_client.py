@@ -20,9 +20,9 @@ import unittest
 import sys
 
 from nose.plugins.skip import SkipTest
-import pymongo
-from pymongo.errors import ConfigurationError, OperationFailure
-from pymongo.errors import ConnectionFailure
+import _motor_pymongo as pymongo
+from motor.errors import AutoReconnect, ConfigurationError, ConnectionFailure
+from motor.errors import OperationFailure
 from tornado import gen
 from tornado.concurrent import Future
 from tornado.ioloop import IOLoop
@@ -125,7 +125,7 @@ class MotorClientTest(MotorTest):
         error = None
         try:
             yield [timeout_fut, notimeout_fut]
-        except pymongo.errors.AutoReconnect, e:
+        except AutoReconnect, e:
             error = e
 
         self.assertEqual(str(error), 'timed out')
@@ -280,7 +280,7 @@ class MotorResolverTest(MotorTest):
             client = motor.MotorClient(host, port, io_loop=self.io_loop)
             yield client.open()  # No error.
 
-            with assert_raises(pymongo.errors.ConnectionFailure):
+            with assert_raises(ConnectionFailure):
                 client = motor.MotorClient(
                     'doesntexist',
                     connectTimeoutMS=100,
@@ -306,7 +306,7 @@ class MotorResolverTest(MotorTest):
 
         yield self.test_resolver('tornado.netutil.ThreadedResolver')
 
-    @gen_test
+    @gen_test(timeout=30)
     def test_twisted_resolver(self):
         try:
             import twisted

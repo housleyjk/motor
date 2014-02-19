@@ -20,10 +20,9 @@ import time
 import unittest
 from tornado import gen, testing
 
-import pymongo
-from pymongo import ReadPreference
-from pymongo.mongo_replica_set_client import Member, Monitor, _partition_node
-from pymongo.errors import AutoReconnect, OperationFailure
+from _motor_pymongo import ReadPreference
+from _motor_pymongo.mongo_replica_set_client import Member, Monitor, _partition_node
+from motor.errors import AutoReconnect, OperationFailure
 from tornado.testing import gen_test
 
 import motor

@@ -9,7 +9,7 @@ Motor Tutorial
 
 .. testsetup:: before-inserting-2000-docs
 
-  import pymongo
+  import _motor_pymongo as pymongo
   import motor
   import tornado.web
   from tornado.ioloop import IOLoop
@@ -18,7 +18,7 @@ Motor Tutorial
 
 .. testsetup:: after-inserting-2000-docs
 
-  import pymongo
+  import _motor_pymongo as pymongo
   import motor
   import tornado.web
   from tornado.ioloop import IOLoop
@@ -29,7 +29,7 @@ Motor Tutorial
 
 .. testcleanup:: *
 
-  import pymongo
+  import _motor_pymongo as pymongo
   pymongo.MongoClient().test_database.test_collection.remove()
 
 A guide to using **MongoDB** and **Tornado** with **Motor**, the
@@ -227,7 +227,7 @@ unique id:
 
 The first insert results in ``my_callback`` being called with result 1 and
 error ``None``. The second insert triggers ``my_callback`` with result None and
-a :class:`~pymongo.errors.DuplicateKeyError`.
+a :class:`~motor.errors.DuplicateKeyError`.
 
 A typical beginner's mistake with Motor is to insert documents in a loop,
 not waiting for each insert to complete before beginning the next::

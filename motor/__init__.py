@@ -31,24 +31,20 @@ try:
 except ImportError:
     pass
 
-import bson
-import pymongo
-import pymongo.auth
-import pymongo.common
-import pymongo.database
-import pymongo.errors
-import pymongo.mongo_client
-import pymongo.mongo_replica_set_client
-import pymongo.son_manipulator
-import gridfs
+import _motor_bson as bson
+import _motor_gridfs as gridfs
+import _motor_pymongo as pymongo
 
-from pymongo.bulk import BulkOperationBuilder
-from pymongo.database import Database
-from pymongo.collection import Collection
-from pymongo.cursor import Cursor, _QUERY_OPTIONS
-from pymongo.command_cursor import CommandCursor
-from pymongo.pool import _closed, SocketInfo
-from gridfs import grid_file
+from _motor_gridfs import grid_file
+from _motor_pymongo import auth, database
+from _motor_pymongo.bulk import BulkOperationBuilder
+from _motor_pymongo.database import Database
+from _motor_pymongo.collection import Collection
+from _motor_pymongo.cursor import Cursor, _QUERY_OPTIONS
+from _motor_pymongo.command_cursor import CommandCursor
+from _motor_pymongo.pool import _closed, SocketInfo
+from motor.errors import AutoReconnect, ConfigurationError
+from motor.errors import ConnectionFailure, InvalidOperation
 
 import util
 
@@ -76,15 +72,15 @@ except ImportError:
 
 def check_deprecated_kwargs(kwargs):
     if 'safe' in kwargs:
-        raise pymongo.errors.ConfigurationError(
+        raise ConfigurationError(
             "Motor does not support 'safe', use 'w'")
 
     if 'slave_okay' in kwargs or 'slaveok' in kwargs:
-        raise pymongo.errors.ConfigurationError(
+        raise ConfigurationError(
             "Motor does not support 'slave_okay', use read_preference")
 
     if 'auto_start_request' in kwargs:
-        raise pymongo.errors.ConfigurationError(
+        raise ConfigurationError(
             "Motor does not support requests")
 
 
@@ -372,7 +368,7 @@ class MotorPool(object):
         # Check if dealing with a unix domain socket
         if host.endswith('.sock'):
             if not hasattr(socket, "AF_UNIX"):
-                raise pymongo.errors.ConnectionFailure(
+                raise ConnectionFailure(
                     "UNIX-sockets are not supported on this system")
 
             addrinfos = [(socket.AF_UNIX, socket.SOCK_STREAM, 0, host)]
@@ -447,7 +443,7 @@ class MotorPool(object):
                     deadline,
                     functools.partial(
                         child_gr.throw,
-                        pymongo.errors.ConnectionFailure,
+                        ConnectionFailure,
                         self._create_wait_queue_timeout()))
 
                 self.waiter_timeouts[waiter] = timeout
@@ -539,7 +535,7 @@ class MotorPool(object):
         error.
 
         Checking sockets lets us avoid seeing *some*
-        :class:`~pymongo.errors.AutoReconnect` exceptions on server
+        :class:`~motor.errors.AutoReconnect` exceptions on server
         hiccups, etc. We only do this if it's been > 1 second since
         the last socket checkout, to keep performance reasonable - we
         can't avoid AutoReconnects completely anyway.
@@ -575,7 +571,7 @@ class MotorPool(object):
         self.resolver.close()
 
     def _create_wait_queue_timeout(self):
-        return pymongo.errors.ConnectionFailure(
+        return ConnectionFailure(
             'Timed out waiting for socket from pool with max_size %r and'
             ' wait_queue_timeout %r' % (
                 self.max_size, self.wait_queue_timeout))
@@ -969,7 +965,7 @@ class MotorClientBase(MotorBase):
 
         Accepts an optional callback, or returns a ``Future``.
 
-        Raises :class:`~pymongo.errors.InvalidName` if `to_name` is
+        Raises :class:`~motor.errors.InvalidName` if `to_name` is
         not a valid database name.
 
         If `from_host` is ``None`` the current host is used as the
@@ -997,7 +993,7 @@ class MotorClientBase(MotorBase):
                 raise TypeError("to_name must be an instance "
                                 "of %s" % (basestring.__name__,))
 
-            pymongo.database._check_name(to_name)
+            database._check_name(to_name)
 
             # Make sure there *is* a primary pool.
             yield self._ensure_connected(True)
@@ -1022,7 +1018,7 @@ class MotorClientBase(MotorBase):
                 nonce = response['nonce']
                 copydb_command['username'] = username
                 copydb_command['nonce'] = nonce
-                copydb_command['key'] = pymongo.auth._auth_key(
+                copydb_command['key'] = auth._auth_key(
                     nonce, username, password)
 
             result, duration = yield self._simple_command(
@@ -1052,7 +1048,7 @@ class MotorClientBase(MotorBase):
 
         default_db_name = getattr(self.delegate, attr_name)
         if default_db_name is None:
-            raise pymongo.errors.ConfigurationError(
+            raise ConfigurationError(
                 'No default database defined')
 
         return self[default_db_name]
@@ -1105,7 +1101,7 @@ class MotorClient(MotorClientBase):
           >>> IOLoop.current().run_sync(client.open)
           MotorClient(MongoClient('localhost', 27017))
 
-        ``open`` raises a :exc:`~pymongo.errors.ConnectionFailure` if it
+        ``open`` raises a :exc:`~motor.errors.ConnectionFailure` if it
         cannot connect, but note that auth failures aren't revealed until
         you attempt an operation on the open client.
 
@@ -1180,7 +1176,7 @@ class MotorReplicaSetClient(MotorClientBase):
           >>> IOLoop.current().run_sync(client.open)
           MotorClient(MongoClient('localhost', 27017))
 
-        ``open`` raises a :exc:`~pymongo.errors.ConnectionFailure` if it
+        ``open`` raises a :exc:`~motor.errors.ConnectionFailure` if it
         cannot connect, but note that auth failures aren't revealed until
         you attempt an operation on the open client.
 
@@ -1194,7 +1190,7 @@ class MotorReplicaSetClient(MotorClientBase):
         yield self._ensure_connected(True)
         primary = self._get_member()
         if not primary:
-            raise pymongo.errors.AutoReconnect('no primary is available')
+            raise AutoReconnect('no primary is available')
         raise gen.Return(self)
 
     def _get_member(self):
@@ -1243,7 +1239,7 @@ class MotorReplicaSetMonitor(pymongo.mongo_replica_set_client.Monitor):
         assert greenlet.getcurrent().parent, "Should be on child greenlet"
         try:
             self.rsc.refresh()
-        except pymongo.errors.AutoReconnect:
+        except AutoReconnect:
             pass
         # RSC has been collected or there
         # was an unexpected error.
@@ -1413,7 +1409,7 @@ class MotorCollection(MotorBase):
         :meth:`~MotorCursor.count` perform actual operations.
         """
         if 'callback' in kwargs:
-            raise pymongo.errors.InvalidOperation(
+            raise InvalidOperation(
                 "Pass a callback to each, to_list, or count, not to find.")
 
         cursor = self.delegate.find(*args, **kwargs)
@@ -1557,7 +1553,7 @@ class _MotorBaseCursor(MotorBase):
          - `callback`:    function taking parameters (batch_size, error)
         """
         if not self.alive:
-            raise pymongo.errors.InvalidOperation(
+            raise InvalidOperation(
                 "Can't call get_more() on a MotorCursor that has been"
                 " exhausted or killed.")
 
@@ -1759,8 +1755,7 @@ class _MotorBaseCursor(MotorBase):
                 raise ValueError('length must be non-negative')
 
         if self._query_flags() & _QUERY_OPTIONS['tailable_cursor']:
-            raise pymongo.errors.InvalidOperation(
-                "Can't call to_list on tailable cursor")
+            raise InvalidOperation("Can't call to_list on tailable cursor")
 
         # Special case: limit of 0.
         if self._empty():
@@ -1866,7 +1861,7 @@ class MotorCursor(_MotorBaseCursor):
     def __getitem__(self, index):
         """Get a slice of documents from this cursor.
 
-        Raises :class:`~pymongo.errors.InvalidOperation` if this
+        Raises :class:`~motor.errors.InvalidOperation` if this
         cursor has already been used.
 
         To get a single document use an integral index, e.g.:
@@ -1925,7 +1920,7 @@ class MotorCursor(_MotorBaseCursor):
         slice index overrides prior limits or skips applied to this cursor
         (including those applied through previous calls to this method).
 
-        Raises :class:`~pymongo.errors.IndexError` when the slice has a step,
+        Raises :class:`~motor.errors.IndexError` when the slice has a step,
         a negative start value, or a stop value less than or equal to
         the start value.
 
@@ -1933,8 +1928,7 @@ class MotorCursor(_MotorBaseCursor):
           - `index`: An integer or slice index to be applied to this cursor
         """
         if self.started:
-            raise pymongo.errors.InvalidOperation(
-                "MotorCursor already started")
+            raise InvalidOperation("MotorCursor already started")
 
         if isinstance(index, slice):
             # Slicing a cursor does no I/O - it just sets skip and limit - so
@@ -2100,7 +2094,7 @@ class MotorGridOut(object):
 
     def __getattr__(self, item):
         if not self.delegate._file:
-            raise pymongo.errors.InvalidOperation(
+            raise InvalidOperation(
                 "You must call MotorGridOut.open() before accessing "
                 "the %s property" % item)
 
@@ -2348,7 +2342,7 @@ class MotorGridFS(object):
         # w >= 1 necessary to avoid running 'filemd5' command before
         # all data is written, especially with sharding.
         if 0 == self.collection.write_concern.get('w'):
-            raise pymongo.errors.ConfigurationError(
+            raise ConfigurationError(
                 "Motor does not allow unacknowledged put() to GridFS")
 
         try:

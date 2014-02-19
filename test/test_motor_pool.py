@@ -19,13 +19,13 @@ import greenlet
 import random
 import unittest
 
-import pymongo.errors
 from nose.plugins.skip import SkipTest
 from tornado import stack_context
 from tornado.concurrent import Future
 from tornado.testing import gen_test
 
 import test
+from _motor_pymongo import errors
 from test import MotorTest, assert_raises
 from test.utils import delay
 
@@ -108,7 +108,7 @@ class MotorPoolTest(MotorTest):
             collection = cx.motor_test.test_collection
             future = collection.find_one({'$where': delay(where_delay)})
             if waitQueueTimeoutMS and waitQueueTimeoutMS < where_delay * 1000:
-                with assert_raises(pymongo.errors.ConnectionFailure):
+                with assert_raises(errors.ConnectionFailure):
                     yield collection.find_one()
             else:
                 # No error

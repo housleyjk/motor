@@ -14,3 +14,4 @@ Motor API
     motor_cursor
     gridfs
     web
+    errors

@@ -18,7 +18,8 @@ Motor's version of some replica set testing functions in PyMongo's test.utils.
 """
 
 from tornado import gen
-from pymongo.errors import AutoReconnect
+
+from motor.errors import AutoReconnect
 
 
 @gen.coroutine

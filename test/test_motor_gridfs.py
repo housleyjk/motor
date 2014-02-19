@@ -17,13 +17,13 @@
 
 import unittest
 from functools import partial
-from bson import ObjectId
+from _motor_bson import ObjectId
 
-from bson.py3compat import b, StringIO
-from gridfs.errors import FileExists, NoFile
-from pymongo import MongoClient
-from pymongo.errors import AutoReconnect, ConfigurationError
-from pymongo.read_preferences import ReadPreference
+from _motor_bson.py3compat import b, StringIO
+from _motor_gridfs.errors import FileExists, NoFile
+from _motor_pymongo import MongoClient
+from motor.errors import AutoReconnect, ConfigurationError
+from _motor_pymongo.read_preferences import ReadPreference
 from tornado import gen
 from tornado.testing import gen_test
 

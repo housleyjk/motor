@@ -17,8 +17,8 @@
 import unittest
 
 from nose.plugins.skip import SkipTest
-from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+from _motor_pymongo import MongoClient
+from motor.errors import ConnectionFailure
 from tornado.testing import gen_test
 
 import motor
