@@ -16,8 +16,6 @@ from __future__ import unicode_literals, absolute_import
 
 """Motor, an asynchronous driver for MongoDB."""
 
-import warnings
-
 version_tuple = (0, 3)
 
 import pymongo
@@ -40,82 +38,63 @@ if pymongo.version != expected_pymongo_version:
 
     raise ImportError(msg)
 
-from . import core, motor_gridfs, motor_py3_compat, util
-from .frameworks import tornado as tornado_framework
+from . import core, motor_gridfs
+from .frameworks import asyncio as asyncio_framework
 from .metaprogramming import create_class_with_framework
-from .motor_common import callback_type_error
-
-# TODO: move this to a tornado_motor module, conditionally import here.
 
 __all__ = ['MotorClient', 'MotorReplicaSetClient', 'Op']
 
 
 MotorClient = create_class_with_framework(
     core.AgnosticClient,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorReplicaSetClient = create_class_with_framework(
     core.AgnosticReplicaSetClient,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorDatabase = create_class_with_framework(
     core.AgnosticDatabase,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorCollection = create_class_with_framework(
     core.AgnosticCollection,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorCursor = create_class_with_framework(
     core.AgnosticCursor,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorCommandCursor = create_class_with_framework(
     core.AgnosticCommandCursor,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorBulkOperationBuilder = create_class_with_framework(
     core.AgnosticBulkOperationBuilder,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorGridFS = create_class_with_framework(
     motor_gridfs.AgnosticGridFS,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorGridIn = create_class_with_framework(
     motor_gridfs.AgnosticGridIn,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorGridOut = create_class_with_framework(
     motor_gridfs.AgnosticGridOut,
-    tornado_framework)
+    asyncio_framework)
 
 
 MotorGridOutCursor = create_class_with_framework(
     motor_gridfs.AgnosticGridOutCursor,
-    tornado_framework)
-
-
-def Op(fn, *args, **kwargs):
-    """Obsolete; here for backwards compatibility with Motor 0.1.
-
-    Op had been necessary for ease-of-use with Tornado 2 and @gen.engine. But
-    Motor 0.2 is built for Tornado 3, @gen.coroutine, and Futures, so motor.Op
-    is deprecated.
-    """
-    msg = "motor.Op is deprecated, simply call %s and yield its Future." % (
-        fn.__name__)
-
-    warnings.warn(msg, DeprecationWarning, stacklevel=2)
-    result = fn(*args, **kwargs)
-    assert tornado_framework.is_future(result)
-    return result
+    asyncio_framework)
